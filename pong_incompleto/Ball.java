@@ -15,6 +15,8 @@ public class Ball {
 	private double speed;
 	private double speed_x;
 	private double speed_y;
+	private final double INITIAL_CX;
+	private final double INITIAL_CY;
 
 	/**
 		Construtor da classe Ball. Observe que quem invoca o construtor desta classe define a velocidade da bola 
@@ -38,6 +40,8 @@ public class Ball {
 		this.speed = speed;
 		this.speed_x = -1;
 		this.speed_y = 1;
+		this.INITIAL_CX = cx;
+		this.INITIAL_CY = cy;
 	}
 
 
@@ -80,7 +84,8 @@ public class Ball {
 
 	public void onWallCollision(String wallId){
 		if (wallId.equals("Left") || wallId.equals("Right")) {
-
+			this.cx = INITIAL_CX;
+			this.cy = INITIAL_CY;
 		}
 		if (wallId.equals("Top") || wallId.equals("Bottom")) {
 			this.speed_y *= -1;
