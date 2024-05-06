@@ -7,6 +7,15 @@ import java.awt.*;
 
 public class Ball {
 
+	private double cx;
+	private double cy;
+	private double width;
+	private double height;
+	private Color color;
+	private double speed;
+	private double speed_x;
+	private double speed_y;
+
 	/**
 		Construtor da classe Ball. Observe que quem invoca o construtor desta classe define a velocidade da bola 
 		(em pixels por millisegundo), mas não define a direção deste movimento. A direção do movimento é determinada 
@@ -21,7 +30,14 @@ public class Ball {
 	*/
 
 	public Ball(double cx, double cy, double width, double height, Color color, double speed){
-	
+		this.cx = cx;
+		this.cy = cy;
+		this.width = width;
+		this.height = height;
+		this.color = color;
+		this.speed = speed;
+		this.speed_x = -1;
+		this.speed_y = 1;
 	}
 
 
@@ -31,8 +47,8 @@ public class Ball {
 
 	public void draw(){
 
-		GameLib.setColor(Color.YELLOW);
-		GameLib.fillRect(400, 300, 20, 20);
+		GameLib.setColor(this.color);
+		GameLib.fillRect(cx, cy, width, height);
 	}
 
 	/**
@@ -42,7 +58,8 @@ public class Ball {
 	*/
 
 	public void update(long delta){
-
+		this.cx += this.speed_x*speed;
+		this.cy += this.speed_y*speed;
 	}
 
 	/**
@@ -52,7 +69,7 @@ public class Ball {
 	*/
 
 	public void onPlayerCollision(String playerId){
-
+		this.speed_x *= -1;
 	}
 
 	/**
@@ -62,7 +79,12 @@ public class Ball {
 	*/
 
 	public void onWallCollision(String wallId){
+		if (wallId.equals("Left") || wallId.equals("Right")) {
 
+		}
+		if (wallId.equals("Top") || wallId.equals("Bottom")) {
+			this.speed_y *= -1;
+		}
 	}
 
 	/**
@@ -73,7 +95,11 @@ public class Ball {
 	*/
 	
 	public boolean checkCollision(Wall wall){
-
+		if (this.cx < (wall.getCx() + (wall.getWidth())/2) && this.cx > (wall.getCx() - (wall.getWidth())/2)) {
+			if (this.cy < (wall.getCy() + (wall.getHeight())/2) && this.cy > (wall.getCy() - (wall.getHeight())/2)) {
+				return true;
+			}
+		}
 		return false;
 	}
 
@@ -85,6 +111,11 @@ public class Ball {
 	*/	
 
 	public boolean checkCollision(Player player){
+		if (this.cx < (player.getCx() + (player.getWidth())/2) && this.cx > (player.getCx() - (player.getWidth())/2)) {
+			if (this.cy < (player.getCy() + (player.getHeight())/2) && this.cy > (player.getCy() - (player.getHeight())/2)) {
+				return true;
+			}
+		}
 
 		return false;
 	}
@@ -96,7 +127,7 @@ public class Ball {
 	
 	public double getCx(){
 
-		return 400;
+		return this.cx;
 	}
 
 	/**
@@ -106,7 +137,7 @@ public class Ball {
 
 	public double getCy(){
 
-		return 300;
+		return this.cy;
 	}
 
 	/**
@@ -117,7 +148,7 @@ public class Ball {
 
 	public double getSpeed(){
 
-		return 0;
+		return this.speed;
 	}
 
 }
