@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.util.Random;
 
 /**
 	Esta classe representa a bola usada no jogo. A classe princial do jogo (Pong)
@@ -17,6 +18,16 @@ public class Ball {
 	private double speed_y;
 	private final double INITIAL_CX;
 	private final double INITIAL_CY;
+	private Random gerador;
+
+	private void normalizaVetor() {
+		double norma = Math.pow(this.speed_x, 2) + Math.pow(this.speed_y, 2);
+		norma = Math.sqrt(norma);
+
+		this.speed_x = this.speed_x / norma;
+		this.speed_y = this.speed_y / norma;
+	}
+
 
 	/**
 		Construtor da classe Ball. Observe que quem invoca o construtor desta classe define a velocidade da bola 
@@ -32,16 +43,25 @@ public class Ball {
 	*/
 
 	public Ball(double cx, double cy, double width, double height, Color color, double speed){
+		this.gerador = new Random();
+
 		this.cx = cx;
 		this.cy = cy;
 		this.width = width;
 		this.height = height;
 		this.color = color;
 		this.speed = speed;
-		this.speed_x = -1;
-		this.speed_y = 1;
+		this.speed_x = this.gerador.nextInt(100) + 50;
+		this.speed_y = this.gerador.nextInt(100);
+		if (this.gerador.nextBoolean()) {
+			this.speed_x *= -1;
+		}
+		if (this.gerador.nextBoolean()) {
+			this.speed_y *= -1;
+		}
 		this.INITIAL_CX = cx;
 		this.INITIAL_CY = cy;
+		normalizaVetor();
 	}
 
 
@@ -62,8 +82,8 @@ public class Ball {
 	*/
 
 	public void update(long delta){
-		this.cx += this.speed_x*speed;
-		this.cy += this.speed_y*speed;
+		this.cx += (this.speed_x*speed)*delta;
+		this.cy += (this.speed_y*speed)*delta;
 	}
 
 	/**
@@ -73,6 +93,11 @@ public class Ball {
 	*/
 
 	public void onPlayerCollision(String playerId){
+		if (playerId.equals("Player 1") && this.speed_x > 0) {
+			return;
+		} else if (playerId.equals("Player 2") && this.speed_x < 0) {
+			return;
+		}
 		this.speed_x *= -1;
 	}
 
@@ -84,8 +109,7 @@ public class Ball {
 
 	public void onWallCollision(String wallId){
 		if (wallId.equals("Left") || wallId.equals("Right")) {
-			this.cx = INITIAL_CX;
-			this.cy = INITIAL_CY;
+			this.speed_x *= -1;
 		}
 		if (wallId.equals("Top") || wallId.equals("Bottom")) {
 			this.speed_y *= -1;

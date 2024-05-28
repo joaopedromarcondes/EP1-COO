@@ -26,8 +26,8 @@ public class Score {
 	*/
 
 	public void draw(){
-		String placar = playerId + ": " + this.score;
-		if (playerId.equals("Player 1")) {
+		String placar = this.playerId + ": " + this.score;
+		if (this.playerId.equals("Player 1")) {
 			GameLib.drawText(placar, 70, GameLib.ALIGN_LEFT);
 		}
 		else {

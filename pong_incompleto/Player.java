@@ -47,8 +47,8 @@ public class Player {
 
 	public void draw(){
 
-		GameLib.setColor(color);
-		GameLib.fillRect(cx, cy, width, height);
+		GameLib.setColor(this.color);
+		GameLib.fillRect(this.cx, this.cy, this.width, this.height);
 	}
 
 	/**
@@ -60,7 +60,7 @@ public class Player {
 	*/
 
 	public void moveUp(long delta){
-		this.cy -= this.speed;
+		this.cy -= this.speed * delta;
 		if (this.cy - (this.height/2) < this.v_limit[0]) {
 			
 			this.cy = this.v_limit[0] + (this.height/2);
@@ -76,7 +76,7 @@ public class Player {
 	*/
 
 	public void moveDown(long delta){
-		this.cy += this.speed;
+		this.cy += this.speed * delta;
 		if (this.cy + (this.height/2) > this.v_limit[1]) {
 			this.cy = this.v_limit[1] - (this.height/2);
 		}
