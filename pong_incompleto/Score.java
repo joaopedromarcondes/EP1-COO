@@ -26,11 +26,14 @@ public class Score {
 	*/
 
 	public void draw(){
+		
 		String placar = this.playerId + ": " + this.score;
 		if (this.playerId.equals("Player 1")) {
+			GameLib.setColor(Color.GREEN);
 			GameLib.drawText(placar, 70, GameLib.ALIGN_LEFT);
 		}
 		else {
+			GameLib.setColor(Color.BLUE);
 			GameLib.drawText(placar, 70, GameLib.ALIGN_RIGHT);
 		}
 	}

@@ -16,17 +16,9 @@ public class Ball {
 	private double speed;
 	private double speed_x;
 	private double speed_y;
-	private final double INITIAL_CX;
-	private final double INITIAL_CY;
-	private Random gerador;
+	private long last_delta;
 
-	private void normalizaVetor() {
-		double norma = Math.pow(this.speed_x, 2) + Math.pow(this.speed_y, 2);
-		norma = Math.sqrt(norma);
 
-		this.speed_x = this.speed_x / norma;
-		this.speed_y = this.speed_y / norma;
-	}
 
 
 	/**
@@ -43,7 +35,6 @@ public class Ball {
 	*/
 
 	public Ball(double cx, double cy, double width, double height, Color color, double speed){
-		this.gerador = new Random();
 
 		this.cx = cx;
 		this.cy = cy;
@@ -51,17 +42,22 @@ public class Ball {
 		this.height = height;
 		this.color = color;
 		this.speed = speed;
-		this.speed_x = this.gerador.nextInt(100) + 50;
-		this.speed_y = this.gerador.nextInt(100);
-		if (this.gerador.nextBoolean()) {
+
+		Random gerador = new Random();
+
+		// gera um angulo inteiro entre 30 e 60 graus
+		double angulo = gerador.nextInt(30) + 30;
+
+		angulo = Math.toRadians(angulo);
+
+		this.speed_x = Math.cos(angulo);
+		this.speed_y = Math.sin(angulo);
+		if (gerador.nextBoolean()) {
 			this.speed_x *= -1;
 		}
-		if (this.gerador.nextBoolean()) {
+		if (gerador.nextBoolean()) {
 			this.speed_y *= -1;
 		}
-		this.INITIAL_CX = cx;
-		this.INITIAL_CY = cy;
-		normalizaVetor();
 	}
 
 
@@ -82,8 +78,9 @@ public class Ball {
 	*/
 
 	public void update(long delta){
-		this.cx += (this.speed_x*speed)*delta;
-		this.cy += (this.speed_y*speed)*delta;
+		this.cx += (this.speed_x*this.speed)*delta;
+		this.cy += (this.speed_y*this.speed)*delta;
+		last_delta = delta;
 	}
 
 	/**
@@ -93,12 +90,11 @@ public class Ball {
 	*/
 
 	public void onPlayerCollision(String playerId){
-		if (playerId.equals("Player 1") && this.speed_x > 0) {
-			return;
-		} else if (playerId.equals("Player 2") && this.speed_x < 0) {
-			return;
+		if (playerId.equals("Player 1") && this.speed_x < 0) {
+			this.speed_x *= -1;
+		} else if (playerId.equals("Player 2") && this.speed_x > 0) {
+			this.speed_x *= -1;
 		}
-		this.speed_x *= -1;
 	}
 
 	/**
@@ -108,10 +104,13 @@ public class Ball {
 	*/
 
 	public void onWallCollision(String wallId){
-		if (wallId.equals("Left") || wallId.equals("Right")) {
+		if (wallId.equals("Left") && this.speed_x < 0) {
 			this.speed_x *= -1;
-		}
-		if (wallId.equals("Top") || wallId.equals("Bottom")) {
+		} else if (wallId.equals("Right") && this.speed_x > 0) {
+			this.speed_x *= -1;
+		} else if (wallId.equals("Bottom") && this.speed_y > 0) {
+			this.speed_y *= -1;
+		} else if (wallId.equals("Top") && this.speed_y < 0) {
 			this.speed_y *= -1;
 		}
 	}
@@ -124,8 +123,8 @@ public class Ball {
 	*/
 	
 	public boolean checkCollision(Wall wall){
-		if (this.cx < (wall.getCx() + (wall.getWidth())/2) && this.cx > (wall.getCx() - (wall.getWidth())/2)) {
-			if (this.cy < (wall.getCy() + (wall.getHeight())/2) && this.cy > (wall.getCy() - (wall.getHeight())/2)) {
+		if ((this.cx - this.width/2) < (wall.getCx() + (wall.getWidth())/2) && (this.cx + this.width/2) > (wall.getCx() - (wall.getWidth())/2)) {
+			if ((this.cy - this.height/2) < (wall.getCy() + (wall.getHeight())/2) && (this.cy + this.height/2) > (wall.getCy() - (wall.getHeight())/2)) {
 				return true;
 			}
 		}
@@ -140,8 +139,8 @@ public class Ball {
 	*/	
 
 	public boolean checkCollision(Player player){
-		if (this.cx < (player.getCx() + (player.getWidth())/2) && this.cx > (player.getCx() - (player.getWidth())/2)) {
-			if (this.cy < (player.getCy() + (player.getHeight())/2) && this.cy > (player.getCy() - (player.getHeight())/2)) {
+		if ((this.cx - this.width/2) < (player.getCx() + (player.getWidth())/2) && (this.cx + this.width/2) > (player.getCx() - (player.getWidth())/2)) {
+			if ((this.cy - this.height/2) < (player.getCy() + (player.getHeight())/2) && (this.cy + this.height/2) > (player.getCy() - (player.getHeight())/2)) {
 				return true;
 			}
 		}
